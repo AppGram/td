@@ -1,0 +1,79 @@
+# GoReleaser configuration for td
+version: 2
+
+project_name: td
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: td
+    main: .
+    binary: td
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.ShortCommit}}
+
+archives:
+  - id: default
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "Merge pull request"
+      - "Merge branch"
+
+brews:
+  - name: td
+    repository:
+      owner: appgram
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/appgram/td"
+    description: "Minimal todo app with beautiful TUI, inline task syntax, and smart dashboard"
+    license: "MIT"
+    skip_upload: auto
+    install: |
+      bin.install "td"
+    test: |
+      system "#{bin}/td", "-version"
+
+release:
+  github:
+    owner: appgram
+    name: td
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"
