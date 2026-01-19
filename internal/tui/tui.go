@@ -1236,10 +1236,17 @@ func (a *App) renderTaskInfo(width int) string {
 		dueStr = task.DueDate
 	}
 
-	// Tags
+	// Tags - truncate if too long
 	tagStr := "-"
 	if len(task.Tags) > 0 {
 		tagStr = formatTags(task.Tags)
+	}
+	maxValueWidth := width - 12 // account for label and padding
+	if maxValueWidth < 10 {
+		maxValueWidth = 10
+	}
+	if len(tagStr) > maxValueWidth {
+		tagStr = tagStr[:maxValueWidth-3] + "..."
 	}
 
 	// Build header line with full-width accent background
