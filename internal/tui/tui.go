@@ -34,15 +34,17 @@ var (
 
 const weatherUnknown = "--°"
 
-type parsedTask struct {
+// ParsedTask holds the result of parsing inline task syntax
+type ParsedTask struct {
 	Title    string
 	Tags     []string
 	DueDate  string
 	Priority int
 }
 
-func parseTaskInput(input string) parsedTask {
-	var result parsedTask
+// ParseTaskInput parses inline task syntax: "task #tag @date !priority"
+func ParseTaskInput(input string) ParsedTask {
+	var result ParsedTask
 	var titleParts []string
 
 	words := strings.Fields(input)
@@ -1293,7 +1295,7 @@ func (a *App) saveNewTask() {
 		return
 	}
 	ws := a.workspaces[a.state.SelectedWS]
-	parsed := parseTaskInput(a.taskInputBuf)
+	parsed := ParseTaskInput(a.taskInputBuf)
 	if parsed.Title == "" {
 		a.state.Mode = model.ModeNormal
 		a.taskInputBuf = ""
@@ -1738,7 +1740,7 @@ func (a *App) saveTaskEdit() {
 	if task == nil {
 		return
 	}
-	parsed := parseTaskInput(a.taskInputBuf)
+	parsed := ParseTaskInput(a.taskInputBuf)
 	task.Title = parsed.Title
 	if len(parsed.Tags) > 0 {
 		task.Tags = append(task.Tags, parsed.Tags...)

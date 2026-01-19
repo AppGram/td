@@ -48,12 +48,38 @@ func main() {
 			workspaces = []db.Workspace{{ID: wsID, Name: "Default", Order: 0, TaskCount: 0, CompletedCount: 0}}
 		}
 
-		_, err = database.AddTask(workspaces[0].ID, *addTodo, nil)
+		// Parse inline syntax: "task #tag @date !priority"
+		parsed := tui.ParseTaskInput(*addTodo)
+		if parsed.Title == "" {
+			fmt.Fprintf(os.Stderr, "Error: task title is required\n")
+			os.Exit(1)
+		}
+
+		_, err = database.AddTaskWithMeta(workspaces[0].ID, parsed.Title, nil, parsed.Tags, parsed.DueDate, parsed.Priority)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("Todo added")
+		fmt.Printf("Added: %s", parsed.Title)
+		if len(parsed.Tags) > 0 {
+			fmt.Printf(" [tags: %v]", parsed.Tags)
+		}
+		if parsed.DueDate != "" {
+			fmt.Printf(" [due: %s]", parsed.DueDate)
+		}
+		if parsed.Priority != 0 {
+			p := "normal"
+			switch parsed.Priority {
+			case 2:
+				p = "high"
+			case 1:
+				p = "low"
+			case -1:
+				p = "blocked"
+			}
+			fmt.Printf(" [priority: %s]", p)
+		}
+		fmt.Println()
 		return
 	}
 
