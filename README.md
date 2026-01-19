@@ -6,6 +6,9 @@ Minimal todo app with a beautiful TUI, inline task syntax, and smart dashboard.
   <img src="screenshot.png" alt="td Demo" width="800">
 </p>
 
+> [!NOTE]
+> If you enjoy td, give it a star and share it with your friends. That helps others find it and keeps the project going!
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/appgram/td)](https://goreportcard.com/report/github.com/appgram/td)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
