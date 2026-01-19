@@ -66,6 +66,10 @@ go install github.com/appgram/td@latest
 ```bash
 td
 ```
+```
+td -a 'Buy groceries #shopping #home @tomorrow !high'
+```
+
 
 ### Keyboard Shortcuts
 
