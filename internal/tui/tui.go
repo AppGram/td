@@ -1236,18 +1236,22 @@ func (a *App) renderTaskInfo(width int) string {
 		dueStr = task.DueDate
 	}
 
-	// Tags - truncate if too long
+	// Tags
 	tagStr := "-"
 	if len(task.Tags) > 0 {
 		tagStr = formatTags(task.Tags)
 	}
-	maxValueWidth := width - 12 // account for label and padding
-	if maxValueWidth < 10 {
-		maxValueWidth = 10
+
+	// Calculate max value width and truncate if needed
+	labelWidth := 10
+	maxValueWidth := width - labelWidth - 2
+	if maxValueWidth < 5 {
+		maxValueWidth = 5
 	}
-	if len(tagStr) > maxValueWidth {
-		tagStr = tagStr[:maxValueWidth-3] + "..."
-	}
+
+	// Truncate long values
+	tagStr = truncateText(tagStr, maxValueWidth)
+	dueStr = truncateText(dueStr, maxValueWidth)
 
 	// Build header line with full-width accent background
 	headerText := headerStyle.Render("▸ DETAILS")
