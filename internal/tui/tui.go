@@ -827,9 +827,15 @@ func (a *App) renderTasks(w, h int) string {
 		if endIdx > len(a.flatTasks) {
 			endIdx = len(a.flatTasks)
 		}
+		// Reserve marker columns on every row so selection does not shift task content.
+		contentW := max(0, innerW-lipgloss.Width("→ "))
 		for i := a.taskScroll; i < endIdx; i++ {
 			line := a.flatTasks[i]
 			task := line.Task
+			selectionMarker := "  "
+			if i == a.state.SelectedTask {
+				selectionMarker = "→ "
+			}
 			prefix := strings.Repeat("  ", line.Depth)
 			marker := " "
 			if len(task.Children) > 0 {
@@ -841,7 +847,11 @@ func (a *App) renderTasks(w, h int) string {
 			}
 			prefix = prefix + marker + " "
 
-			rendered := a.renderTaskLine(task, prefix, innerW)
+			rendered := ""
+			if innerW > 0 {
+				rendered = lipgloss.NewStyle().MaxWidth(innerW).
+					Render(selectionMarker + a.renderTaskLine(task, prefix, contentW))
+			}
 			if i == a.state.SelectedTask {
 				rendered = lipgloss.NewStyle().
 					Width(innerW).
